@@ -1,8 +1,8 @@
 with open("day11/input.txt") as f:
-    stones = [int(x) for x in f.read().split(" ")]
+    og_stones = [int(x) for x in f.read().split(" ")]
 
 # Part 1
-
+stones = og_stones
 for i in range(25):
     new_stones = []
     for stone in stones:
@@ -18,9 +18,7 @@ for i in range(25):
 print(len(stones))
 
 # Part 2
-with open("day11/input.txt") as f:
-    stones = [int(x) for x in f.read().split(" ")]
-
+stones = og_stones
 stone_order_map = {}
 stone_count_map = {}
 
@@ -61,11 +59,8 @@ while i >= 0:
             stone_count_map[key][i] = count
     i = i-1
 
-with open("day11/input.txt") as f:
-    stones = [int(x) for x in f.read().split(" ")]
-
 count = 0
-for stone in stones:
+for stone in og_stones:
     count = count+stone_count_map[stone][0]
 print(count)
 
