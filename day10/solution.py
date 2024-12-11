@@ -1,7 +1,6 @@
 with open("day10/input.txt") as f:
     grid = [[int(y) for y in x] for x in f.read().splitlines()]
 
-# Part 1
 def is_valid_candidate(coords, prev_val, path):
     return coords[0] >= 0 and coords[0] < len(grid) and coords[1] >= 0 and coords[1] < len(grid[0]) and \
     grid[coords[0]][coords[1]] == prev_val+1 and not any(x[0] == coords[0] and x[1] == coords[1] for x in path)
