@@ -54,32 +54,20 @@ print(total)
 def add(position, delta):
     return (position[0] + delta[0], position[1] + delta[1])
 
-def handle_same_side(position, side_delta, candidate_search_direction, side_exclusion):
-    original = map[position[0]][position[1]]
-    pos = add(position, candidate_search_direction)
-    if not is_in_map_bounds(pos) or map[pos[0]][pos[1]] != original:
-        return
-    offset = add(pos, side_delta)
-    if not is_in_map_bounds(offset) or map[offset[0]][offset[1]] != original:
-        side_exclusion.add((pos, side_delta))
-        handle_same_side(pos, side_delta, candidate_search_direction, side_exclusion)
-
-def count_sides(position, side_exclusion):
+def count_sides(position, already_existing_sides):
     y, x = to_y_x(position)
     initial = map[y][x]
     number_of_new_sides = 0
     angles = [(-1, 0), (0, 1), (1, 0), (0, -1)]
     for index, delta in enumerate(angles):
         offset_coords = add(delta, position)
-        if (not is_in_map_bounds(offset_coords) or map[offset_coords[0]][offset_coords[1]] != initial) and  \
-        (position, delta) not in side_exclusion:
-            side_exclusion.add((position, delta))
-            number_of_new_sides += 1
-            side_candidates = [angles[index - 1 if index > 0 else len(angles) -1],
-                               angles[(index+1)%len(angles)]]
-            for cand in side_candidates:
-                handle_same_side(position, delta, cand, side_exclusion)
-        
+        if (not is_in_map_bounds(offset_coords) or map[offset_coords[0]][offset_coords[1]] != initial):
+            sides = [angles[index - 1 if index > 0 else len(angles) -1],
+                                angles[(index+1)%len(angles)]]
+            sides = [*[add(position, side) for side in sides], (position, delta)]
+            if not any((side, delta) in already_existing_sides for side in sides):
+                number_of_new_sides += 1
+            already_existing_sides.add((position, delta))  
     return number_of_new_sides
 
 visited = set()
