@@ -30,16 +30,10 @@ for problem in problems:
     M = np.array([[ax, bx], [ay, by]])
 
     T = np.array((targety, targetx))
-    # det = np.linalg.det(M)
-    # handle det
     [a_times, b_times] = np.linalg.solve(M, T)
     if a_times >= 101 or b_times >= 101 or a_times < 0 or b_times < 0:
-        # print("too large")
-        # print(a_times, b_times)
         continue
     elif not is_whole(a_times, 0.00000001) or not is_whole(b_times, 0.00000001):
-        # print("not integer")
-        # print(a_times, b_times)
         continue
     else:
         total_cost += round(a_times) * 3
