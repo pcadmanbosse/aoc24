@@ -74,41 +74,28 @@ while instruction_pointer < len(commands) - 1:
         outs,
     )
 
-print(outs)
-print(",".join([str(x) for x in outs]))
+# print(outs)
+# print(",".join([str(x) for x in outs]))
 
 
 # Part 2
-ins = []
-outputs = []
-start_pos = 0
-bound = 1000000
-min_val = 0
-min_val_index = 0
-max_val = 0
-max_val_index = 0
-curr_best =0
-commands = [2, 4, 1, 3, 7, 5, 0, 3, 1, 4, 4, 7, 5, 5, 3, 0]
-max_eq = 0
-max_eq_pos = 0
-start = [2, 4, 1, 3, 7, 5, 0, 3, 1, 4, 4, 7, 5, 5, 3, 0]
-check_ind = 0
-for start_pos in range(10):
-    start[check_ind] = start_pos
-    instruction_pointer = 0
+start_pos = 1041905
+
+for i in range(1000):
+    start_pos = start_pos + i * 10000
     register_A = start_pos
     register_B = 0
     register_C = 0
     outs = []
     past = set()
     halt = False
+    instruction_pointer = 0
     while (
         not halt and 
         instruction_pointer < len(commands) - 1
         and not (instruction_pointer, register_A, register_B, register_C) in past
     ):
         past.add((instruction_pointer, register_A, register_B, register_C))
-
         instruction_pointer, register_A, register_B, register_C, outs = handle(
             instruction_pointer,
             commands[instruction_pointer],
@@ -118,18 +105,8 @@ for start_pos in range(10):
             register_C,
             outs,
         )
- 
+    if (outs[14:17] == commands[14:17]):
+        print("found")
+        print(start_pos)
 
-    value = int("".join([str(x) for x in outs])) if len(outs) > 0 else 0
-    if value > max_val:
-        max_val = value
-        max_val_index = start_pos
-    if value < min_val:
-        min_val = value
-        min_val_index = start_pos
-
-    ins.append(start_pos)
-    outputs.append(value)
-
-print([2, 4, 1, 3, 7, 5, 0, 3, 1, 4, 4, 7, 5, 5, 3, 0])
-print(outputs)
+print("".join([str(x) for x in commands]))
