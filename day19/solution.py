@@ -46,13 +46,12 @@ def find_pattern_combinations(pattern):
     for s in stock:
         if s == pattern:
             combinations = combinations + 1
-        elif len(pattern) > 1:
-            if pattern.startswith(s):
-                combinations += find_pattern_combinations(pattern[len(s):])
+        elif pattern.startswith(s):
+            combinations += find_pattern_combinations(pattern[len(s):])
     return combinations
 
 count = 0
-for pattern in patterns:
+for pattern in patterns: 
     count += find_pattern_combinations(pattern)
     print(count)
 print(count)
