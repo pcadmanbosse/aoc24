@@ -11,7 +11,7 @@ digit_graph = {
     "0": {"up": "2", "right": "A"},
     "A": {"left": "0", "up": "3"},
     "1": {"up": "4", "right": "2",},
-    "2": {"left": "1", "right": "3", "up": "5"},
+    "2": {"left": "1", "right": "3", "up": "5", "down": "0"},
     "3": {"left": "2", "up": "6", "down": "A"},
     "4": {"down": "1", "right": "5", "up": "7"},
     "5": {"left": "4", "right": "6", "up": "8", "down": "2"},
@@ -70,15 +70,9 @@ costs = {
 }
 
 def calc_cost(path, ind):
-    if ind == 3: 
+    if ind == 2: 
         return len(path)
-    if len(path) == 0:
-        return 0
-    cost = 0
-    for i in range(len(path) -1):
-        cost += 2*costs[path[i]][path[i+1]] + costs["A"][path[i+1]]
-    cost += 2*costs["A"][path[len(path)-1]]
-    return cost
+    return sum([costs["A"][x] for x in path])
 
 # Part 1
 def search_find(search_code, graph, ind):
@@ -123,3 +117,7 @@ for code in codes:
     total += len(st_code) * numeric
 
 print(total)
+
+
+# l --> r
+# A --> x --> y --> l --> x --> y --> A
