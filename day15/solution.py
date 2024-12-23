@@ -13,10 +13,8 @@ def is_in_map_bounds(position):
         and position[1] < len(map[0])
     )
 
-
 def add(position, delta):
     return (position[0] + delta[0], position[1] + delta[1])
-
 
 def to_y_x(position):
     return position[0], position[1]

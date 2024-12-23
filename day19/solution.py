@@ -53,5 +53,4 @@ def find_pattern_combinations(pattern):
 count = 0
 for pattern in patterns: 
     count += find_pattern_combinations(pattern)
-    print(count)
 print(count)
