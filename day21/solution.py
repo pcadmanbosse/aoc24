@@ -1,123 +1,64 @@
-codes = ["869A", "180A", "596A", "965A", "973A"]
+import functools
+
+
 codes = [
-    "029A",
-    "980A",
-    "179A",
-    "456A",
-    "379A",
+    "869A", "180A", "596A", "965A", "973A"
 ]
-
 digit_graph = {
-    "0": {"up": "2", "right": "A"},
-    "A": {"left": "0", "up": "3"},
-    "1": {"up": "4", "right": "2",},
-    "2": {"left": "1", "right": "3", "up": "5", "down": "0"},
-    "3": {"left": "2", "up": "6", "down": "A"},
-    "4": {"down": "1", "right": "5", "up": "7"},
-    "5": {"left": "4", "right": "6", "up": "8", "down": "2"},
-    "6": {"left": "5", "up": "9", "down": "3"},
-    "7": {"down": "4", "right": "8"},
-    "8": {"left": "7", "down": "5", "right": "9"},
-    "9": {"left": "8", "down": "6"},
+    "0": {"^": "2", ">": "A"},
+    "A": {"<": "0", "^": "3"},
+    "1": {"^": "4", ">": "2",},
+    "2": {"<": "1", ">": "3", "^": "5", "v": "0"},
+    "3": {"<": "2", "^": "6", "v": "A"},
+    "4": {"v": "1", ">": "5", "^": "7"},
+    "5": {"<": "4", ">": "6", "^": "8", "v": "2"},
+    "6": {"<": "5", "^": "9", "v": "3"},
+    "7": {"v": "4", ">": "8"},
+    "8": {"<": "7", "v": "5", ">": "9"},
+    "9": {"<": "8", "v": "6"},
 }
-
 directional_graph = {
-    "up": {"right": "A", "down": "down"},
-    "down": {"up": "up", "left": "left", "right": "right"},
-    "left": {
-        "right": "down",
+    "^": {">": "A", "v": "v"},
+    "v": {"^": "^", "<": "<", ">": ">"},
+    "<": {
+        ">": "v",
     },
-    "right": {"left": "down", "up": "A"},
-    "A": {"left": "up", "down": "right"},
+    ">": {"<": "v", "^": "A"},
+    "A": {"<": "^", "v": ">"},
 }
 
-costs = {
-"A":{
-    "up": 2,
-    "right": 2,
-    "left": 6,
-    "down": 4,
-    "A": 0
-},
-"up": {
-    "up": 0,
-    "down": 2,
-    "A": 2,
-    "right": 4,
-    "left": 4
-},
-"right": {
-    "A": 2,
-    "down": 2,
-    "up": 4,
-    "left": 4,
-    "right": 0
-}, 
-"left": {
-    "down": 2,
-    "up": 4,
-    "right": 4,
-    "A": 6,
-    "left": 0
-}, 
-"down": {
-    "up": 2,
-    "down": 0,
-    "right": 2,
-    "left": 2,
-    "A": 4
-}
-}
-
-def calc_cost(path, ind):
-    if ind == 2: 
-        return len(path)
-    return sum([costs["A"][x] for x in path])
-
-# Part 1
-def search_find(search_code, graph, ind):
-    insts = []
-    # code element by code element
-    for y, code in enumerate(search_code):
-        best_code = len(search_code)**len(search_code)
-        cb = []
-        starting_graph_pos = "A" if y == 0 else search_code[y-1]
-        queue = []
-        queue.append((starting_graph_pos, [], []))
-
-        while len(queue) > 0:
-            (el, path, visited) = queue.pop()
-            if el == code:
-                cost = calc_cost(insts + path + ["A"], ind)
-                if cost < best_code:
-                    best_code = cost
-                    cb = path + ["A"]
+@functools.cache
+def sequence(f, t, max_level, level):
+    graph = digit_graph if level == 0 else directional_graph
+    queue = []
+    queue.append((f, [], []))
+    best_cost = (1000+level)**10000
+    while len(queue) > 0:
+        (el, path, visited) = queue.pop()
+        if el == t:
+            path += ["A"]
+            if level < max_level:
+                cost = sum([sequence(path[x-1] if x > 0 else "A", path[x], max_level, level+1) for x, _  in enumerate(path)])
             else:
-                for key in graph[el].keys():
-                    if graph[el][key] != el and graph[el][key] not in visited:
-                        queue.append((graph[el][key], path + [key], visited + [el]))
-        insts.extend(cb)
-    return insts
+                cost = len(path)
+            if cost < best_cost:
+                best_cost = cost
+        else:
+            for key in graph[el].keys():
+                if graph[el][key] != el and graph[el][key] not in visited:
+                    queue.append((graph[el][key], path + [key], visited + [el]))
+    return best_cost
 
-#<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A
-#v<<A>>^A<A>AvA<^AA>A<vAAA>^A
-#<A^A>^^AvvvA
-
-#<v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A
-#v<<A>>^AAAvA^Av<A<AA>>^AvAA^<A>Av<A>^Av<<A>>^AAAv<<A>>^AvAA^<A>Av<A>^A<A>A
 total = 0
 for code in codes:
-    numeric = int(code[0:3])
-    st_code = search_find(code, digit_graph, 0)
-    print(''.join(st_code).replace("down", "v").replace("left", "<").replace("right", ">").replace("up", "^"))
-    for i in range(0, 2):
-        st_code = search_find(st_code, directional_graph, i+1)
-    print(''.join(st_code).replace("down", "v").replace("left", "<").replace("right", ">").replace("up", "^"))
-    print(len(st_code))
-    total += len(st_code) * numeric
-
+    int_part = int(code[0:3])
+    r = 0
+    for i,c in enumerate(code):
+        # Part 1
+        # r.extend(sequence(code[i-1] if i > 0 else "A", c, 2, 0))
+        # Part 2
+        r+= sequence(code[i-1] if i > 0 else "A", c, 25, 0)
+    total += int_part * r
 print(total)
 
-
-# l --> r
-# A --> x --> y --> l --> x --> y --> A
+print(sequence("A", "0", 0, 0))
