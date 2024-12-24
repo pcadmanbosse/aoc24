@@ -60,5 +60,3 @@ for code in codes:
         r+= sequence(code[i-1] if i > 0 else "A", c, 25, 0)
     total += int_part * r
 print(total)
-
-print(sequence("A", "0", 0, 0))
